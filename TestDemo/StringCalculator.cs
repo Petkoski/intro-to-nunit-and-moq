@@ -27,7 +27,7 @@ namespace TestDemo
 
             //Saving the result if prime.
             //Save() is not implemented
-            if(_store != null && isPrime(total))
+            if(_store != null && IsPrime(total))
             {
                 _store.Save(total);
             }
@@ -35,7 +35,7 @@ namespace TestDemo
             return total;
         }
 
-        bool isPrime(int number)
+        bool IsPrime(int number)
         {
             if (number == 1) return false;
             if (number == 2) return true;
