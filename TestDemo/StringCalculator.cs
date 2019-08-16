@@ -4,6 +4,13 @@ namespace TestDemo
 {
     public class StringCalculator
     {
+        private readonly IStore _store;
+
+        public StringCalculator(IStore store)
+        {
+            _store = store;
+        }
+
         public int Add(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -17,7 +24,29 @@ namespace TestDemo
             {
                 total += TryParseToInteger(number);
             }
+
+            //Saving the result if prime.
+            //Save() is not implemented
+            if(_store != null && isPrime(total))
+            {
+                _store.Save(total);
+            }
+
             return total;
+        }
+
+        bool isPrime(int number)
+        {
+            if (number == 1) return false;
+            if (number == 2) return true;
+
+            var limit = Math.Ceiling(Math.Sqrt(number)); //hoisting the loop limit
+
+            for (int i = 2; i <= limit; ++i)
+            {
+                if (number % i == 0) return false;
+            }
+            return true;
         }
 
         private int TryParseToInteger(string input)

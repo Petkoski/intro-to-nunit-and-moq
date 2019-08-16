@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using System;
 
 namespace TestDemo.UnitTests
@@ -6,6 +7,8 @@ namespace TestDemo.UnitTests
     [TestFixture]
     public class StringCalculatorUnitTests
     {
+        private Mock<IStore> _mockStore;
+
         //[Test]
         //public void UnitUnderTest_Scenario_ExpectedOutcome()
         //{
@@ -14,7 +17,8 @@ namespace TestDemo.UnitTests
 
         private StringCalculator GetCalculator()
         {
-            return new StringCalculator();
+            _mockStore = new Mock<IStore>();
+            return new StringCalculator(_mockStore.Object); //.Object - how we would refer to a mock of some interface
         }
 
         [Test]
@@ -60,6 +64,36 @@ namespace TestDemo.UnitTests
         {
             StringCalculator calc = GetCalculator();
             Assert.That(() => calc.Add(input), Throws.TypeOf<ArgumentException>());
+        }
+
+        [Test]
+        [TestCase("2")]                         //2
+        [TestCase("5,6")]                       //11
+        [TestCase("3,4")]                       //7
+        [TestCase("10, 10, 3")]                 //23
+        [TestCase("5,5,5,5,5,5,5,5,5,5,3")]     //53
+        public void Add_ResultIsAPrimeNumber_ResultIsSaved(string input)
+        {
+            //Business requirement: If the result is prime - save it
+            //Still not sure how saving is going to work
+
+            StringCalculator calc = GetCalculator();
+            var result = calc.Add(input);
+            //mockStore.Verify(m => m.Save(), Times.Once); //Save expects int parameter
+            _mockStore.Verify(m => m.Save(It.IsAny<int>()), Times.Once); //Verifying that Save() is called (with int passed to it)
+        }
+
+        [Test]
+        [TestCase("4")]                         //4
+        [TestCase("5,5")]                       //10
+        [TestCase("5,4")]                       //9
+        [TestCase("10, 10, 5")]                 //25
+        [TestCase("5,5,5,5,5,5,5,5,5,5,1")]     //51
+        public void Add_ResultIsNotAPrimeNumber_ResultIsNotSaved(string input)
+        {
+            StringCalculator calc = GetCalculator();
+            var result = calc.Add(input);
+            _mockStore.Verify(m => m.Save(It.IsAny<int>()), Times.Never);
         }
     }
 }
