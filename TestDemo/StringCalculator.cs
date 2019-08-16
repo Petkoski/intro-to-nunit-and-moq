@@ -15,9 +15,19 @@ namespace TestDemo
             var total = 0;
             foreach (var number in numbers)
             {
-                total += int.Parse(number);
+                total += TryParseToInteger(number);
             }
             return total;
+        }
+
+        private int TryParseToInteger(string input)
+        {
+            int dest;
+            if(!int.TryParse(input, out dest))
+            {
+                throw new ArgumentException("Input format was incorrect.");
+            }
+            return dest;
         }
     }
 }
